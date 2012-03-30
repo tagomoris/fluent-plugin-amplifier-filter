@@ -22,7 +22,7 @@ unless ENV.has_key?('VERBOSE')
   $log = nulllogger
 end
 
-require 'fluent/plugin/out_amplifier'
+require 'fluent/plugin/out_amplifier_filter'
 
 class Test::Unit::TestCase
 end
