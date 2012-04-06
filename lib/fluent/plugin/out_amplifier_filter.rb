@@ -69,23 +69,34 @@ class Fluent::AmplifierFilterOutput < Fluent::Output
             end
     end
 
+    pairs = []
     if @key_names
       es.each {|time,record|
+        updated = {}
         @key_names.each {|key|
           val = record[key]
-          record[key] = amp(val) unless val.nil?
+          next unless val
+          updated[key] = amp(val)
         }
-        Fluent::Engine.emit(tag, time, record)
+        if updated.size > 0
+          pairs.push [time, record.merge(updated)]
+        end
       }
     else @key_pattern
       es.each {|time,record|
+        updated = {}
         record.keys.each {|key|
           val = record[key]
-          record[key] = amp(val) if not val.nil? and @key_pattern.match(key)
+          next unless val
+          next unless @key_pattern.match(key)
+          updated[key] = amp(val) 
         }
-        Fluent::Engine.emit(tag, time, record)
+        if updated.size > 0
+          pairs.push [time, record.merge(updated)]
+        end
       }
     end
+    Fluent::Engine.emit_array(tag, pairs)
 
     chain.next
   end
