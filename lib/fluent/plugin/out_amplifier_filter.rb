@@ -72,15 +72,16 @@ class Fluent::AmplifierFilterOutput < Fluent::Output
     if @key_names
       es.each {|time,record|
         @key_names.each {|key|
-          record[key] = amp(record[key]) if record[key]
+          val = record[key]
+          record[key] = amp(val) unless val.nil?
         }
         Fluent::Engine.emit(tag, time, record)
       }
     else @key_pattern
       es.each {|time,record|
         record.keys.each {|key|
-          next unless record[key] and @key_pattern.match(key)
-          record[key] = amp(record[key])
+          val = record[key]
+          record[key] = amp(val) if not val.nil? and @key_pattern.match(key)
         }
         Fluent::Engine.emit(tag, time, record)
       }
