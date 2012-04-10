@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 Gem::Specification.new do |gem|
   gem.name          = "fluent-plugin-amplifier-filter"
-  gem.version       = "0.1.0"
+  gem.version       = "0.1.1"
   gem.authors       = ["TAGOMORI Satoshi"]
   gem.email         = ["tagomoris@gmail.com"]
   gem.summary       = %q{plugin to re-emit messages with amplified values}
