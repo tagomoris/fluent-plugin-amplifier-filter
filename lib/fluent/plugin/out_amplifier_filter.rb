@@ -80,6 +80,8 @@ class Fluent::AmplifierFilterOutput < Fluent::Output
         }
         if updated.size > 0
           pairs.push [time, record.merge(updated)]
+        else
+          pairs.push [time, record.dup]
         end
       }
     else @key_pattern
@@ -93,6 +95,8 @@ class Fluent::AmplifierFilterOutput < Fluent::Output
         }
         if updated.size > 0
           pairs.push [time, record.merge(updated)]
+        else
+          pairs.push [time, record.dup]
         end
       }
     end
