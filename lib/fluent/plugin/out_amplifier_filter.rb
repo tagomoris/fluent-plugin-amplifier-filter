@@ -78,6 +78,8 @@ class Fluent::AmplifierFilterOutput < Fluent::Output
           next unless val
           updated[key] = amp(val)
         }
+        $log.info "amplifiler amp:#{self.method(:amp)}"
+        $log.info "amplifier debug ratio:#{@ratio} updated:#{updated.to_json} record:#{record.to_json}"
         if updated.size > 0
           pairs.push [time, record.merge(updated)]
         else
@@ -93,6 +95,8 @@ class Fluent::AmplifierFilterOutput < Fluent::Output
           next unless @key_pattern.match(key)
           updated[key] = amp(val) 
         }
+        $log.info "amplifiler amp:#{self.method(:amp)}"
+        $log.info "amplifier debug ratio:#{@ratio} updated:#{updated.to_json} record:#{record.to_json}"
         if updated.size > 0
           pairs.push [time, record.merge(updated)]
         else
