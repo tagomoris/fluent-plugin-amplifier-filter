@@ -34,7 +34,7 @@ class Fluent::AmplifierFilterOutput < Fluent::Output
           end
     (class << self; self; end).module_eval do
       define_method(:amp, amp)
-    end    
+    end
 
     if not @remove_prefix and not @add_prefix
       raise Fluent::ConfigError, "missing both of remove_prefix and add_prefix"
@@ -60,7 +60,7 @@ class Fluent::AmplifierFilterOutput < Fluent::Output
     if @remove_prefix and
         ( (tag.start_with?(@removed_prefix_string) and tag.length > @removed_length) or tag == @remove_prefix)
       tag = tag[@removed_length..-1]
-    end 
+    end
     if @add_prefix
       tag = if tag and tag.length > 0
               @added_prefix_string + tag
@@ -78,8 +78,8 @@ class Fluent::AmplifierFilterOutput < Fluent::Output
           next unless val
           updated[key] = amp(val)
         }
-        $log.info "amplifier tag:#{tag} amp:#{self.method(:amp)}"
-        $log.info "amplifier tag:#{tag} debug ratio:#{@ratio} updated:#{updated.to_json} record:#{record.to_json}"
+        $log.debug "amplifier tag:#{tag} amp:#{self.method(:amp)}"
+        $log.debug "amplifier tag:#{tag} debug ratio:#{@ratio} updated:#{updated.to_json} record:#{record.to_json}"
         if updated.size > 0
           pairs.push [time, record.merge(updated)]
         else
@@ -93,10 +93,10 @@ class Fluent::AmplifierFilterOutput < Fluent::Output
           val = record[key]
           next unless val
           next unless @key_pattern.match(key)
-          updated[key] = amp(val) 
+          updated[key] = amp(val)
         }
-        $log.info "amplifier tag:#{tag} amp:#{self.method(:amp)}"
-        $log.info "amplifier tag:#{tag} debug ratio:#{@ratio} updated:#{updated.to_json} record:#{record.to_json}"
+        $log.debug "amplifier tag:#{tag} amp:#{self.method(:amp)}"
+        $log.debug "amplifier tag:#{tag} debug ratio:#{@ratio} updated:#{updated.to_json} record:#{record.to_json}"
         if updated.size > 0
           pairs.push [time, record.merge(updated)]
         else
