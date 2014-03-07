@@ -4,7 +4,7 @@
 
 ### AmplifierFilterOutput
 
-Modify numeric values of specified fields, and Re-emit with modified tags. Useful for counting values of sampled data (by fluent-plugin-sampling-filter or etc).
+[Fluentd](http://fluentd.org) plugin to modify numeric values of specified fields, and Re-emit with modified tags. Useful for counting values of sampled data (by fluent-plugin-sampling-filter or etc).
 
 ## Configuration
 
