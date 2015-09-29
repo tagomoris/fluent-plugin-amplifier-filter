@@ -107,7 +107,7 @@ class Fluent::AmplifierFilterOutput < Fluent::Output
         end
       }
     end
-    Fluent::Engine.emit_array(tag, pairs)
+    router.emit_array(tag, pairs)
 
     chain.next
   end
