@@ -86,21 +86,6 @@ class AmplifierFilterTest < Test::Unit::TestCase
     assert_equal 50      , second['zap']
   end
 
-  def test_filter_2
-    # CONFIG = %[
-    #   ratio 1.5
-    #   key_names foo,bar,baz
-    # ]
-    d2 = create_driver(CONFIG, 'test')
-    d2.run do
-      d2.filter({'name' => 'first',  'foo' => 10, 'bar' => 1, 'baz' => 20, 'zap' => 50})
-      d2.filter({'name' => 'second', 'foo' => 10, 'bar' => 2, 'baz' => 40, 'zap' => 50})
-    end
-    filtered = d2.filtered_as_array
-    assert_equal 2, filtered.length
-    assert_equal 'test', filtered[0][0] # tag
-  end
-
   def test_filter_3
     # CONFIG2 = %[
     #   ratio 0.75
