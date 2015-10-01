@@ -86,7 +86,7 @@ class AmplifierFilterTest < Test::Unit::TestCase
     assert_equal 50      , second['zap']
   end
 
-  def test_filter_3
+  def test_filter_2
     # CONFIG2 = %[
     #   ratio 0.75
     #   floor yes
