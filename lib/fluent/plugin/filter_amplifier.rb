@@ -3,10 +3,10 @@ class Fluent::AmplifierFilter < Fluent::Filter
 
   config_param :ratio, :float
 
-  config_param :key_names, :string, :default => nil
-  config_param :key_pattern, :string, :default => nil
+  config_param :key_names, :string, default: nil
+  config_param :key_pattern, :string, default: nil
 
-  config_param :floor, :bool, :default => false
+  config_param :floor, :bool, default: false
 
   # Define `log` method for v0.10.42 or earlier
   unless method_defined?(:log)
