@@ -25,7 +25,7 @@ else
 end
 
 require 'fluent/plugin/out_amplifier_filter'
-require 'fluent/plugin/filter_amplifier'
+require 'fluent/plugin/filter_amplifier_filter'
 
 class Test::Unit::TestCase
 end
