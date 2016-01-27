@@ -13,14 +13,14 @@
 To do x10 for messages 1/10 sampled, and to do x100 for messages 1/100 sampled:
 
     <match sampled_10.**>
-      type amplifier_filter
+      @type amplifier_filter
       ratio 10
       remove_prefix sampled_10
       key_names counts,rates
     </match>
     
     <match sampled_100.**>
-      type amplifier_filter
+      @type amplifier_filter
       ratio 100
       remove_prefix sampled_100
       key_names counts,rates
@@ -33,7 +33,7 @@ To do x10 for messages 1/10 sampled, and to do x100 for messages 1/100 sampled:
 `key_pattern`(regexp) useful insted of `key_names`, and `add_prefix` is also useful:
 
     <match sampled_10.**>
-      type amplifier_filter
+      @type amplifier_filter
       ratio 10
       remove_prefix sampled_10
       add_prefix summary
@@ -50,13 +50,13 @@ Filter version of AmplifierFilterOutput plugin.
 It depends on Fluentd 0.12 or later.
 
     <filter sampled_10.**>
-      type amplifier_filter
+      @type amplifier_filter
       ratio 10
       key_names counts,rates
     </filter>
 
     <filter sampled_100.**>
-      type amplifier_filter
+      @type amplifier_filter
       ratio 100
       key_names counts,rates
     </filter>
@@ -72,7 +72,7 @@ It depends on Fluentd 0.12 or later.
 `key_pattern`(regexp) useful insted of `key_names`, and `add_prefix` is also useful:
 
     <filter sampled_10.**>
-      type amplifier_filter
+      @type amplifier_filter
       ratio 10
       key_pattern .*_(count|rate)$
     </filter>
