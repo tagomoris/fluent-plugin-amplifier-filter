@@ -1,4 +1,6 @@
-class Fluent::AmplifierFilter < Fluent::Filter
+require 'fluent/plugin/filter'
+
+class Fluent::Plugin::AmplifierFilter < Fluent::Plugin::Filter
   Fluent::Plugin.register_filter('amplifier_filter', self)
 
   config_param :ratio, :float

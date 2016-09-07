@@ -1,4 +1,5 @@
 require 'helper'
+require 'fluent/test/driver/filter'
 
 class AmplifierFilterTest < Test::Unit::TestCase
   def setup
@@ -26,8 +27,8 @@ class AmplifierFilterTest < Test::Unit::TestCase
     key_pattern field.*
   ]
 
-  def create_driver(conf = CONFIG, tag='test')
-    Fluent::Test::FilterTestDriver.new(Fluent::AmplifierFilter, tag).configure(conf)
+  def create_driver(conf = CONFIG)
+    Fluent::Test::Driver::Filter.new(Fluent::Plugin::AmplifierFilter).configure(conf)
   end
 
   def test_configure
@@ -62,23 +63,22 @@ class AmplifierFilterTest < Test::Unit::TestCase
     #   ratio 1.5
     #   key_names foo,bar,baz
     # ]
-    d1 = create_driver(CONFIG, 'test.service')
-    d1.run do
-      d1.filter({'name' => 'first',  'foo' => 10, 'bar' => 1, 'baz' => 20, 'zap' => 50})
-      d1.filter({'name' => 'second', 'foo' => 10, 'bar' => 2, 'baz' => 40, 'zap' => 50})
+    d1 = create_driver(CONFIG)
+    d1.run(default_tag: 'test.service') do
+      d1.feed({'name' => 'first',  'foo' => 10, 'bar' => 1, 'baz' => 20, 'zap' => 50})
+      d1.feed({'name' => 'second', 'foo' => 10, 'bar' => 2, 'baz' => 40, 'zap' => 50})
     end
-    filtered = d1.filtered_as_array
+    filtered = d1.filtered.map{|e| e.last }
     assert_equal 2, filtered.length
-    assert_equal 'test.service', filtered[0][0] # tag
 
-    first = filtered[0][2]
+    first = filtered[0]
     assert_equal 'first', first['name']
     assert_equal 15     , first['foo']
     assert_equal 1.5    , first['bar']
     assert_equal 30     , first['baz']
     assert_equal 50     , first['zap']
 
-    second = filtered[1][2]
+    second = filtered[1]
     assert_equal 'second', second['name']
     assert_equal 15      , second['foo']
     assert_equal 3       , second['bar']
@@ -92,23 +92,22 @@ class AmplifierFilterTest < Test::Unit::TestCase
     #   floor yes
     #   key_pattern field.*
     # ]
-    d3 = create_driver(CONFIG2, 'test.service')
-    d3.run do
-      d3.filter({'name' => 'first',  'fieldfoo' => 10, 'fieldbar' => 1, 'fieldbaz' => 20, 'zap' => 50})
-      d3.filter({'name' => 'second', 'fieldfoo' => '10', 'fieldbar' => '2', 'fieldbaz' => '40', 'zap' => '50'})
+    d3 = create_driver(CONFIG2)
+    d3.run(default_tag: 'test.service') do
+      d3.feed({'name' => 'first',  'fieldfoo' => 10, 'fieldbar' => 1, 'fieldbaz' => 20, 'zap' => 50})
+      d3.feed({'name' => 'second', 'fieldfoo' => '10', 'fieldbar' => '2', 'fieldbaz' => '40', 'zap' => '50'})
     end
-    filtered = d3.filtered_as_array
+    filtered = d3.filtered.map {|e| e.last }
     assert_equal 2, filtered.length
-    assert_equal 'test.service', filtered[0][0] # tag
 
-    first = filtered[0][2]
+    first = filtered[0]
     assert_equal 'first', first['name']
     assert_equal 7      , first['fieldfoo']
     assert_equal 0      , first['fieldbar']
     assert_equal 15     , first['fieldbaz']
     assert_equal 50     , first['zap']
 
-    second = filtered[1][2]
+    second = filtered[1]
     assert_equal 'second', second['name']
     assert_equal 7       , second['fieldfoo']
     assert_equal 1       , second['fieldbar']
