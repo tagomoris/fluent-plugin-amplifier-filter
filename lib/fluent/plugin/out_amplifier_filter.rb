@@ -1,5 +1,9 @@
-class Fluent::AmplifierFilterOutput < Fluent::Output
+require 'fluent/plugin/output'
+
+class Fluent::Output::AmplifierFilterOutput < Fluent::Plugin::Output
   Fluent::Plugin.register_output('amplifier_filter', self)
+
+  helpers :event_emitter
 
   config_param :ratio, :float
 
@@ -61,7 +65,7 @@ class Fluent::AmplifierFilterOutput < Fluent::Output
     (value.to_f * @ratio).floor
   end
 
-  def emit(tag, es, chain)
+  def process(tag, es)
     if @remove_prefix and
         ( (tag.start_with?(@removed_prefix_string) and tag.length > @removed_length) or tag == @remove_prefix)
       tag = tag[@removed_length..-1]
@@ -108,7 +112,5 @@ class Fluent::AmplifierFilterOutput < Fluent::Output
       }
     end
     router.emit_array(tag, pairs)
-
-    chain.next
   end
 end
