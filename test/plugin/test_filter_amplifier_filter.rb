@@ -33,21 +33,21 @@ class AmplifierFilterTest < Test::Unit::TestCase
 
   def test_configure
     assert_raise(Fluent::ConfigError) {
-      d = create_driver('')
+      create_driver('')
     }
     assert_raise(Fluent::ConfigError) {
-      d = create_driver(%[
+      create_driver(%[
         ratio 1
       ])
     }
     assert_nothing_thrown {
-      d = create_driver(%[
+      create_driver(%[
         ratio 1
         key_names field1
       ])
     }
     assert_nothing_raised {
-      d = create_driver(%[
+      create_driver(%[
         ratio 1
         key_pattern field\d+
       ])
