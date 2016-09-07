@@ -10,11 +10,6 @@ class Fluent::Plugin::AmplifierFilter < Fluent::Plugin::Filter
 
   config_param :floor, :bool, default: false
 
-  # Define `log` method for v0.10.42 or earlier
-  unless method_defined?(:log)
-    define_method("log") { $log }
-  end
-
   def configure(conf)
     super
 
@@ -85,4 +80,4 @@ class Fluent::Plugin::AmplifierFilter < Fluent::Plugin::Filter
     end
     new_es
   end
-end if defined?(Fluent::Filter)
+end
