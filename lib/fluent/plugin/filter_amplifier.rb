@@ -1,11 +1,12 @@
 require 'fluent/plugin/filter'
 
 class Fluent::Plugin::AmplifierFilter < Fluent::Plugin::Filter
+  Fluent::Plugin.register_filter('amplifier', self)
   Fluent::Plugin.register_filter('amplifier_filter', self)
 
   config_param :ratio, :float
 
-  config_param :key_names, :string, default: nil
+  config_param :key_names, :array, value_type: :string, default: nil
   config_param :key_pattern, :string, default: nil
 
   config_param :floor, :bool, default: false
@@ -13,27 +14,21 @@ class Fluent::Plugin::AmplifierFilter < Fluent::Plugin::Filter
   def configure(conf)
     super
 
-    if @key_names.nil? and @key_pattern.nil?
+    if @key_names.nil? && @key_pattern.nil?
       raise Fluent::ConfigError, "missing both of key_names and key_pattern"
     end
-    if not @key_names.nil? and not @key_pattern.nil?
+    if @key_names && @key_pattern
       raise Fluent::ConfigError, "cannot specify both of key_names and key_pattern"
-    end
-    if @key_names
-      @key_names = @key_names.split(',')
     end
     if @key_pattern
       @key_pattern = Regexp.new(@key_pattern)
     end
 
-    amp = if @floor
-            method(:amp_with_floor)
-          else
-            method(:amp_without_floor)
-          end
-    (class << self; self; end).module_eval do
-      define_method(:amp, amp)
-    end
+    amp = @floor ? :amp_with_floor : :amp_without_floor
+    self.define_singleton_method(:amp, method(amp))
+
+    filter_method = @key_names ? :filter_with_names : :filter_with_patterns
+    self.define_singleton_method(:filter, method(filter_method))
   end
 
   def amp_without_floor(value)
@@ -44,40 +39,41 @@ class Fluent::Plugin::AmplifierFilter < Fluent::Plugin::Filter
     (value.to_f * @ratio).floor
   end
 
-  def filter_stream(tag, es)
-    new_es = Fluent::MultiEventStream.new
+  def filter(tag, time, record)
     if @key_names
-      es.each {|time,record|
-        updated = {}
-        @key_names.each {|key|
-          val = record[key]
-          next unless val
-          updated[key] = amp(val)
-        }
-        log.debug "amplifier tag:#{tag} floor:#{@floor} ratio:#{@ratio} updated:#{updated.to_json} record:#{record.to_json}"
-        if updated.size > 0
-          new_es.add(time, record.merge(updated))
-        else
-          new_es.add(time, record.dup)
-        end
-      }
-    else @key_pattern
-      es.each {|time,record|
-        updated = {}
-        record.keys.each {|key|
-          val = record[key]
-          next unless val
-          next unless @key_pattern.match(key)
-          updated[key] = amp(val)
-        }
-        log.debug "amplifier tag:#{tag} floor:#{@floor} ratio:#{@ratio} updated:#{updated.to_json} record:#{record.to_json}"
-        if updated.size > 0
-          new_es.add(time, record.merge(updated))
-        else
-          new_es.add(time, record.dup)
-        end
-      }
+      filter_with_names(tag, time, record)
+    else
+      filter_with_patterns(tag, time, record)
     end
-    new_es
+  end
+
+  def filter_with_names(tag, time, record)
+    updated = {}
+    @key_names.each do |key|
+      val = record[key]
+      next unless val
+      updated[key] = amp(val)
+    end
+    log.trace "amplifier", tag: tag, floor: @floor, ratio: @ratio, updated: updated, original: record
+    if updated.size > 0
+      record.merge(updated)
+    else
+      record
+    end
+  end
+
+  def filter_with_patterns(tag, time, record)
+    updated = {}
+    record.each_pair do |key, val|
+      next unless val
+      next unless @key_pattern.match(key)
+      updated[key] = amp(val)
+    end
+    log.trace "amplifier", tag: tag, floor: @floor, ratio: @ratio, updated: updated, original: record
+    if updated.size > 0
+      record.merge(updated)
+    else
+      record
+    end
   end
 end
