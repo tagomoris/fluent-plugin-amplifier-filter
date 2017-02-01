@@ -1,4 +1,6 @@
-class Fluent::AmplifierFilter < Fluent::Filter
+require 'fluent/plugin/filter'
+
+class Fluent::Plugin::AmplifierFilter < Fluent::Plugin::Filter
   Fluent::Plugin.register_filter('amplifier_filter', self)
 
   config_param :ratio, :float
@@ -7,11 +9,6 @@ class Fluent::AmplifierFilter < Fluent::Filter
   config_param :key_pattern, :string, default: nil
 
   config_param :floor, :bool, default: false
-
-  # Define `log` method for v0.10.42 or earlier
-  unless method_defined?(:log)
-    define_method("log") { $log }
-  end
 
   def configure(conf)
     super
@@ -83,4 +80,4 @@ class Fluent::AmplifierFilter < Fluent::Filter
     end
     new_es
   end
-end if defined?(Fluent::Filter)
+end
