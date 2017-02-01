@@ -7,25 +7,24 @@ class Fluent::Output::AmplifierFilterOutput < Fluent::Plugin::Output
 
   config_param :ratio, :float
 
-  config_param :key_names, :string, :default => nil
-  config_param :key_pattern, :string, :default => nil
+  config_param :key_names, :array, value_type: :string, default: nil
+  config_param :key_pattern, :string, default: nil
 
-  config_param :floor, :bool, :default => false
+  config_param :floor, :bool, default: false
 
-  config_param :remove_prefix, :string, :default => nil
-  config_param :add_prefix, :string, :default => nil
+  config_param :remove_prefix, :string, default: nil
+  config_param :add_prefix, :string, default: nil
 
   def configure(conf)
     super
 
+    log.warn "'amplifier_filter' output plugin is deprecated. use 'amplifier' filter plugin instead."
+
     if @key_names.nil? and @key_pattern.nil?
       raise Fluent::ConfigError, "missing both of key_names and key_pattern"
     end
-    if not @key_names.nil? and not @key_pattern.nil?
+    if @key_names && @key_pattern
       raise Fluent::ConfigError, "cannot specify both of key_names and key_pattern"
-    end
-    if @key_names
-      @key_names = @key_names.split(',')
     end
     if @key_pattern
       @key_pattern = Regexp.new(@key_pattern)
@@ -36,9 +35,7 @@ class Fluent::Output::AmplifierFilterOutput < Fluent::Plugin::Output
           else
             method(:amp_without_floor)
           end
-    (class << self; self; end).module_eval do
-      define_method(:amp, amp)
-    end
+    self.define_singleton_method(:amp, amp)
 
     if not @remove_prefix and not @add_prefix
       raise Fluent::ConfigError, "missing both of remove_prefix and add_prefix"
