@@ -2,6 +2,13 @@
 
 [Fluentd](http://fluentd.org) plugin to modify numeric values of specified fields. Useful for counting values of sampled data (by fluent-plugin-sampling-filter or etc).
 
+## Requirements
+
+| fluent-plugin-amplifier-filter | fluentd    | ruby   |
+|--------------------------------|------------|--------|
+| >= 1.0.0                       | >= v0.14.0 | >= 2.1 |
+| <  1.0.0                       | <  v0.14.0 | >= 1.9 |
+
 ## Configuration
 
 ### AmplifierFilter
